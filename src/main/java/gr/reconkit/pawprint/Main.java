@@ -1,0 +1,32 @@
+package gr.reconkit.pawprint;
+import gr.reconkit.pawprint.tools.Tool;
+import gr.reconkit.pawprint.tools.WhoisTool;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+
+        HashMap<String, Tool> menu = new HashMap<String, Tool>();
+
+            Tool whois = new WhoisTool();
+            menu.put(whois.name(), whois);
+
+                if (args.length == 0) {
+                    System.out.println("Help List");
+
+                    menu.forEach((name, tool) ->
+                        System.out.println(name + " - " + tool.usage()));
+                } else {
+                    Tool tool = menu.get(args[0]);
+                    if (tool == null) {
+                        System.out.println("Tool not Found");
+                        return;
+                    }
+                    else tool.run(java.util.Arrays.copyOfRange(args, 1, args.length));
+                }
+    }
+}
