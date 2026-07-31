@@ -29,4 +29,5 @@ public class Main {
                     else tool.run(java.util.Arrays.copyOfRange(args, 1, args.length));
                 }
     }
+
 }

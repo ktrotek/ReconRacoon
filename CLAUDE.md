@@ -95,9 +95,58 @@ Greet, check which milestone they're on (look at what files exist in the tree), 
 what they got working and where they're stuck, then coach the next small step.
 Remember: hints and questions, not solutions.
 
-## Current state — updated 2026-07-30
+## Current state — updated 2026-07-31
 
-**Milestone: M1 COMPLETE. Next up: M2 (whois — real Socket on port 43).**
+**Milestone: M2 CORE COMPLETE. In progress: M2 stretch (IANA referral).**
+
+M2 core done and verified (built + ran the jar; real WHOIS data for example.com).
+`WhoisTool.run` now: guards `args.length == 0` -> prints `usage()`; opens
+`new Socket("whois.verisign-grs.com", 43)` in try-with-resources; writes
+`args[0] + "\r\n"` as UTF-8 bytes, flushes; wraps the InputStream in
+`InputStreamReader` (explicit charset) -> `BufferedReader`; reads with the
+`while ((line = lines.readLine()) != null)` idiom; catches `IOException`.
+Server is still HARDCODED, so it only works for `.com`/`.net`.
+
+Bugs the learner hit and fixed across M2 (all worth recognizing again later):
+- `args == null` vs `args.length == 0` (copyOfRange never returns null).
+- Scope: declaring `Socket s = null` at top, then creating a *different* local
+  inside `else` — the connection died at the closing brace.
+- `DataInputStream` for text (wrong: it's for Java binary primitives; its
+  `readLine` is deprecated). Correct chain is InputStream -> InputStreamReader
+  -> BufferedReader.
+- Wrapping syntax: wrote `input.InputStreamReader x = new BufferedReader()`.
+  Taught `Type name = expression;` and "the wrapped thing goes inside the
+  wrapper's constructor parens."
+- **Class vs. instance**: `BufferedReader.readLine()` instead of
+  `lines.readLine()`. Hit this twice — likely to recur.
+- Infinite loop: `while (line != null)` with the read *outside* the loop.
+- Bad IDE auto-import: `import static jdk.jfr.internal.JVM.flush;` after typing
+  a bare `flush()`. Taught: read the package before accepting an import.
+- Building the query from `socket` instead of `args[0]` (compiles fine — `+`
+  silently calls `toString()`).
+
+**Learner meta (important, 2026-07-31):** they said "I usually follow along
+tutorials so it's hard to figure out code by heart." Taught the fix: write the
+steps as English comments FIRST, then translate one line at a time — turns a
+blank method into a series of small lookups. This worked; keep using it. Also
+taught comment-the-why-not-the-what (their first pass restated every line).
+
+**M2 stretch plan (IANA referral) — IN PROGRESS.**
+Verified against the live IANA server on 2026-07-31 — NOTE, the earlier M2 plan
+below says the field is `refer:`, which is WRONG for this flow:
+- You must query the **TLD**, not the full domain. `example.com` -> IANA returns
+  its own record with no referral; `com` -> returns `whois: whois.verisign-grs.com`.
+- The field is **`whois:`** (not `refer:`), with padding spaces before the value.
+- Real edge cases to make them handle: `uk` has **no** `whois:` line at all
+  (Nominet isn't listed), and `gr` has a `whois:` line with an **empty** value.
+  So "no server found" is a normal outcome, not an error.
+Design being taught: extract the socket logic into
+`String query(String server, String domain)` that RETURNS the response
+(StringBuilder) instead of printing — reinforces return-vs-print — then `run`
+calls it twice (IANA for the TLD, then the real server) and prints once.
+String parsing: `startsWith`, `substring`/`split`, `trim`, `lastIndexOf('.')`.
+
+--- (M1 record kept below for reference) ---
 
 M1 done and verified end-to-end (built + ran the jar):
 - `reconkit` (no args) -> "Help List" + `whois - raw WHOIS lookup`
