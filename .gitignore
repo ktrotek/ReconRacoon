@@ -6,5 +6,9 @@ target/
 .idea/shelf/
 *.iml
 
+# Claude Code — local coaching notes and settings, not part of the project
+CLAUDE.md
+.claude/
+
 # OS noise
 .DS_Store
