@@ -21,8 +21,25 @@ public class WhoisTool implements Tool{
             return;
         }
         try {
-            String response = query("whois.verisign-grs.com", args[0]);
-            System.out.print(response);
+
+            int index = args[0].lastIndexOf('.');
+            String tld = args[0].substring(index + 1);
+            String ianaResponse = query("whois.iana.org", tld);
+            String[] responseLines = ianaResponse.split("\n");
+
+            String server = null;
+
+            for (String line : responseLines) {
+                    if (line.startsWith("whois:"))
+                        server = line.substring("whois:".length()).trim();
+                }
+            if (server == null || server.isEmpty()) {
+                System.out.println("No WHOIS server for ." + tld);
+                return;
+            }
+            String response = query(server, args[0]);
+            System.out.println(response);
+
         } catch (IOException e) {
             System.err.println(e);
         }
