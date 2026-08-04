@@ -21,18 +21,22 @@ public class WhoisTool implements Tool{
             return;
         }
         try {
-
+            // Find position of last "." so TLD can be keyed by IANA
             int index = args[0].lastIndexOf('.');
             String tld = args[0].substring(index + 1);
+            // Query origin of top level domain
             String ianaResponse = query("whois.iana.org", tld);
+            // Split lines for every \n
             String[] responseLines = ianaResponse.split("\n");
 
             String server = null;
 
+            // Store info starting with whois on variable string
             for (String line : responseLines) {
                     if (line.startsWith("whois:"))
                         server = line.substring("whois:".length()).trim();
                 }
+            // Fallback , also case where TLD is .gr where the whois line is empty.
             if (server == null || server.isEmpty()) {
                 System.out.println("No WHOIS server for ." + tld);
                 return;
@@ -54,7 +58,6 @@ public class WhoisTool implements Tool{
             // Convert query to bytes, explicit charset so there no issue between machines
             byte[] bytes = query.getBytes(StandardCharsets.UTF_8);
             output.write(bytes);
-            // Makes sure that
             output.flush();
             InputStream input = socket.getInputStream();
             // Decodes Bytes to characters
