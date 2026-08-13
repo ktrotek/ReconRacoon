@@ -1,7 +1,9 @@
 package gr.reconkit.pawprint;
 import gr.reconkit.pawprint.tools.Tool;
 import gr.reconkit.pawprint.tools.WhoisTool;
+import gr.reconkit.pawprint.tools.HeaderTool;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,22 +14,28 @@ public class Main {
 
         HashMap<String, Tool> menu = new HashMap<String, Tool>();
 
-            Tool whois = new WhoisTool();
-            menu.put(whois.name(), whois);
+        Tool headers = new HeaderTool();
+        Tool whois = new WhoisTool();
+        menu.put(whois.name(), whois);
+        menu.put(headers.name(), headers);
 
-                if (args.length == 0) {
-                    System.out.println("Help List");
+        try {
+            if (args.length == 0) {
+                System.out.println("Help List");
 
-                    menu.forEach((name, tool) ->
+                menu.forEach((name, tool) ->
                         System.out.println(name + " - " + tool.usage()));
-                } else {
-                    Tool tool = menu.get(args[0]);
-                    if (tool == null) {
-                        System.out.println("Tool not Found");
-                        return;
-                    }
-                    else tool.run(java.util.Arrays.copyOfRange(args, 1, args.length));
-                }
+            } else {
+                Tool tool = menu.get(args[0]);
+                if (tool == null) {
+                    System.out.println("Tool not Found");
+                    return;
+                } else tool.run(java.util.Arrays.copyOfRange(args, 1, args.length));
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println();
+            System.err.println(e);
+            System.exit(1);
+        }
     }
-
 }

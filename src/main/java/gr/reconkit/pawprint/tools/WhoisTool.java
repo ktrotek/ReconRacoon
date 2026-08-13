@@ -13,14 +13,12 @@ public class WhoisTool implements Tool{
         return "raw WHOIS lookup";
     }
 
-
-    public void run(String[] args){
+    public void run(String[] args) throws IOException{
 
         if (args.length == 0) {
             System.out.println(usage());
             return;
         }
-        try {
             // Find position of last "." so TLD can be keyed by IANA
             int index = args[0].lastIndexOf('.');
             String tld = args[0].substring(index + 1);
@@ -43,10 +41,6 @@ public class WhoisTool implements Tool{
             }
             String response = query(server, args[0]);
             System.out.println(response);
-
-        } catch (IOException e) {
-            System.err.println(e);
-        }
     }
 
     private String query(String server, String domain) throws IOException{
@@ -74,6 +68,4 @@ public class WhoisTool implements Tool{
             return sb.toString();
         }
     }
-
-
 }
