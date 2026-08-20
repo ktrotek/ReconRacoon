@@ -1,6 +1,5 @@
 package gr.reconkit.pawprint.tools;
 
-import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
