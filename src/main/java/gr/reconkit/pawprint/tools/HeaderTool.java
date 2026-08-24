@@ -72,7 +72,7 @@ public class HeaderTool implements Tool {
         }
         while (hopCount <= 4);
     }
-    private HttpResponse<String> query(URI uri) throws InterruptedException, java.io.IOException{
+    private HttpResponse<String> query(URI uri) throws InterruptedException, java.io.IOException {
             HttpClient httpClientDialler = HttpClient.newHttpClient();
             // Timeout so the process doesnt hang
             HttpRequest request = HttpRequest.newBuilder().uri(uri).HEAD().timeout(Duration.ofSeconds(5)).build();
