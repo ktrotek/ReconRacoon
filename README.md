@@ -1,6 +1,6 @@
 # 🦝 ReconKit 
 
-> A small, dependency-free reconnaissance toolkit written in plain Java, CLI-driven with network probes like whois, headers, tls and banner grab.
+> A small, dependency-free reconnaissance toolkit written in plain Java, CLI-driven with network probes like whois, headers and tls certificate inspection.
 
 `reconkit` is a security toolkit built on just two primitives from the standard library: `java.net.Socket` and `java.net.http.HttpClient`. Every tool is a simple, readable wrapper over a real network protocol so you can see exactly what goes over the wire. Developed as a learning project to better understand java and network fundamentals under the hood.
 
