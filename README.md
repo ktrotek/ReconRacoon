@@ -13,7 +13,6 @@ Each sub-command is a self-contained `Tool` plugged into a single dispatcher.
 | `whois`   | Raw WHOIS lookup for a domain                                        | Raw TCP on port 43                       |
 | `headers` | Fetches a URL and grades its HTTP security headers (pass/fail)       | `java.net.http.HttpClient`, HEAD         |
 | `tls`     | Inspects a server's TLS certificate chain and flags MITM middleboxes | `SSLSocket` handshake + `X509Certificate`|
-| `banner`  | Service banner grabber *(planned — offline suite)*                   | `Socket` read loop                       |
 
 ## Build
 
