@@ -15,10 +15,12 @@ public class HeaderTool implements Tool {
     public String name() {
         return "headers";
     }
+
     public String usage() {
         return "Header response";
     }
-    public void run(String[] args) throws IOException, InterruptedException, NoSuchElementException {
+
+    public void run(String[] args) throws IOException, InterruptedException {
         if (args.length == 0) {
             System.out.println(usage());
             return;
@@ -56,8 +58,7 @@ public class HeaderTool implements Tool {
                         return;
                 }
                 uri = URI.create(redirectLocation.get());
-            }
-            else {
+            } else {
                 List<String> securityHeaders = List.of("strict-transport-security", "referrer-policy", "x-frame-options",
                         "x-content-type-options", "content-security-policy");
                 System.out.println("Security audit results: ");
@@ -72,10 +73,11 @@ public class HeaderTool implements Tool {
         }
         while (hopCount <= 4);
     }
-    private HttpResponse<String> query(URI uri) throws InterruptedException, java.io.IOException {
-            HttpClient httpClientDialler = HttpClient.newHttpClient();
-            // Timeout so the process doesnt hang
-            HttpRequest request = HttpRequest.newBuilder().uri(uri).HEAD().timeout(Duration.ofSeconds(5)).build();
+
+    private HttpResponse<String> query(URI uri) throws InterruptedException, IOException {
+        HttpClient httpClientDialler = HttpClient.newHttpClient();
+        // Timeout so the process doesn't hang
+        HttpRequest request = HttpRequest.newBuilder().uri(uri).HEAD().timeout(Duration.ofSeconds(5)).build();
         return httpClientDialler.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }

@@ -25,7 +25,8 @@ public class TLSTool implements Tool {
     public String name() {
         return "tls";
     }
-    public String usage(){
+
+    public String usage() {
         return "tls certificate lookup";
     }
 
@@ -45,13 +46,11 @@ public class TLSTool implements Tool {
         int defaultPort = 443;
         int port = -1;
         boolean containsFlag = false;
-        String flag;
 
         for (String token : args) {
             if (token.startsWith("--")) {
                 containsFlag = true;
-                flag = token;
-            } else if (token.contains(":")){
+            } else if (token.contains(":")) {
                 int index = token.lastIndexOf(':');
                 port = Integer.parseInt(token.substring(index + 1));
                 host = token.substring(0, index);
@@ -65,61 +64,65 @@ public class TLSTool implements Tool {
 
         if (!containsFlag) {
             sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        }
-        else {
+        } else {
             System.out.println("INSECURE mode - certificate validation disabled");
 
             // A TrustManager rejects a cert by THROWING; empty bodies never throw, so this accepts every certificate.
             X509TrustManager permissive = new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType) { }
-                public void checkServerTrusted(X509Certificate[] chain, String authType) { }
-                public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
             };
 
             try {
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ctx.init(null, new TrustManager[]{ permissive }, null);
+                ctx.init(null, new TrustManager[]{permissive}, null);
                 sslsocketfactory = ctx.getSocketFactory();
             } catch (NoSuchAlgorithmException | KeyManagementException e) {
                 throw new RuntimeException("Could not initialise permissive TLS context", e);
             }
         }
 
-        try (SSLSocket sslSocket =  (SSLSocket) sslsocketfactory.createSocket(host, port)) {
-        SSLSession session = sslSocket.getSession();
+        try (SSLSocket sslSocket = (SSLSocket) sslsocketfactory.createSocket(host, port)) {
+            SSLSession session = sslSocket.getSession();
 
-        Certificate[] chain = session.getPeerCertificates();
-        X509Certificate leaf= (X509Certificate) chain[0];
-        System.out.printf("%-9s %s%n", "Host:", leaf.getSubjectX500Principal());
-        System.out.printf("%-9s %s%n", "Issuer:", leaf.getIssuerX500Principal());
+            Certificate[] chain = session.getPeerCertificates();
+            X509Certificate leaf = (X509Certificate) chain[0];
+            System.out.printf("%-9s %s%n", "Host:", leaf.getSubjectX500Principal());
+            System.out.printf("%-9s %s%n", "Issuer:", leaf.getIssuerX500Principal());
 
-        String certificateVendor = leaf.getIssuerX500Principal().getName();
-        boolean isMiddlebox = false;
+            String certificateVendor = leaf.getIssuerX500Principal().getName();
+            boolean isMiddlebox = false;
 
-        for (String name : vendors) {
-            //  toLowerCase() could produce wrong results on a PC with Greek/etc locale
-            if (certificateVendor.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                System.out.println(name + " appears to be a middlebox certificate issuer");
-                isMiddlebox = true;
+            for (String name : vendors) {
+                //  toLowerCase() could produce wrong results on a PC with Greek/etc locale
+                if (certificateVendor.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                    System.out.println(name + " appears to be a middlebox certificate issuer");
+                    isMiddlebox = true;
+                }
             }
-        }
-        if (!isMiddlebox) {
+            if (!isMiddlebox) {
                 System.out.println("Certificate doesn't appear to originate from a middlebox issuer");
             }
 
-        System.out.printf("%-9s %s %s%n", "TLS:", session.getCipherSuite(), session.getProtocol());
+            System.out.printf("%-9s %s %s%n", "TLS:", session.getCipherSuite(), session.getProtocol());
 
-        Instant expiryInstant =  leaf.getNotAfter().toInstant();
-        long daysRemaining = DAYS.between(Instant.now(), expiryInstant);
+            Instant expiryInstant = leaf.getNotAfter().toInstant();
+            long daysRemaining = DAYS.between(Instant.now(), expiryInstant);
 
             if (daysRemaining > 0) {
                 System.out.println("The certificate expires in: " + daysRemaining + " days");
-            }
-            else {
+            } else {
                 System.out.println("Certificate has expired");
             }
 
-            Collection<List<?>> generalName= leaf.getSubjectAlternativeNames();
+            Collection<List<?>> generalName = leaf.getSubjectAlternativeNames();
 
             if (generalName == null) {
                 return;

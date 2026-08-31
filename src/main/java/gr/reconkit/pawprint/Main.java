@@ -3,6 +3,7 @@ import gr.reconkit.pawprint.tools.TLSTool;
 import gr.reconkit.pawprint.tools.Tool;
 import gr.reconkit.pawprint.tools.WhoisTool;
 import gr.reconkit.pawprint.tools.HeaderTool;
+import gr.reconkit.pawprint.tools.BannerTool;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,10 +18,12 @@ public class Main {
         Tool headers = new HeaderTool();
         Tool whois = new WhoisTool();
         Tool tls = new TLSTool();
+        Tool banner = new BannerTool();
 
         menu.put(whois.name(), whois);
         menu.put(headers.name(), headers);
         menu.put(tls.name(), tls);
+        menu.put(banner.name(), banner);
 
         try {
             if (args.length == 0) {
