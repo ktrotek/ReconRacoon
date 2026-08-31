@@ -51,9 +51,6 @@ java -jar target/reconkit-1.0-SNAPSHOT.jar tls example.com
 
 ## Shortcut: run it as `rk`
 
-Typing the full `java -jar target/...` every time gets old. Add a shell alias so you
-can just run `rk <tool> <args...>`.
-
 Add this line to `~/.bashrc` (adjust the path if your checkout lives elsewhere):
 
 ```bash
@@ -70,16 +67,4 @@ Now the tools run with the short name from anywhere:
 
 ```bash
 rk banner example.com 80
-rk tls example.com
-rk whois example.com
 ```
-
-Prefer a real command over an alias? Drop a one-line wrapper script on your `PATH`
-instead — e.g. `~/.local/bin/rk`:
-
-```bash
-#!/usr/bin/env sh
-exec java -jar "$HOME/IdeaProjects/reconkit/target/reconkit-1.0-SNAPSHOT.jar" "$@"
-```
-
-Then make it executable with `chmod +x ~/.local/bin/rk`.
